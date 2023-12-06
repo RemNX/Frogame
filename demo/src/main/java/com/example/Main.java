@@ -62,7 +62,6 @@ public class Main {
 
         //sstocklists.listplayer[0].ajoute(stocklists.listtype[1][0],1);
         //stocklists.listplayer[0].ajoute(stocklists.listtype[0][1],300);
-        //stocklists.listplayer[1].ajoute(stocklists.listtype[4][0],1);
-
+        //stocklists.listplayer[1].ajoute(stocklists.listtype[4][0],1);s
     }
 }

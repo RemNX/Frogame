@@ -4,8 +4,8 @@ public class stocklists {
     /* #region //!------Listes Joueurs----- */
 
     public static player[] listplayer = {
-            new player("Cass", 1, 0, 500),
-            new player("Rem", 1, 0, 500)
+            new player("Cass", 1, 0, 500,1),
+            new player("Rem", 1, 0, 500,2)
     };
 
 

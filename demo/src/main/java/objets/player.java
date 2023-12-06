@@ -1,4 +1,8 @@
 package objets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,15 +17,17 @@ public class player {
     private int experience;
     private int money;
     private ArrayList<card> cards;
+    private int id;
     /* #endregion */
 
     /* #region //?-----Constructeurs----- */
-    public player(String name, int level, int experience, int money) {
+    public player(String name, int level, int experience, int money, int id) {
         this.setname(name);
         this.setlevel(level);
         this.setexp(experience);
         this.setmoney(money);
         this.cards = new ArrayList<card>();
+        this.setid(id);
     }
     /* #endregion */
 
@@ -45,6 +51,10 @@ public class player {
     public ArrayList<card> getcards() {
         return this.cards;
     }
+
+    public int getid(){
+        return this.id;
+    }
     /* #endregion */
 
     /* #region //?-----Modificateurs----*/
@@ -66,6 +76,10 @@ public class player {
 
     public void setcards(ArrayList<card> cards) {
         this.cards = cards;
+    }
+
+    public void setid(int id){
+        this.id=id;
     }
     /* #endregion */
 
@@ -128,10 +142,50 @@ public class player {
             int drop_card=random.nextInt(stocklists.listtype[drop_rarity].length);
             type_card thecard=stocklists.listtype[drop_rarity][drop_card];
             this.ajoute(thecard,1);
+            ajoutecard(thecard.getid(),1,this.getid());
             txt+=(thecard.getname()+" \n");
             tirage.affichage.setText(txt);
         }
     }
 
+
+
+
+    private Connection connect() {
+        Connection conn = null;
+        try{Class.forName("org.sqlite.JDBC");
+        }catch (ClassNotFoundException e){
+            System.out.println(e);
+        }
+        try {
+            conn = DriverManager.getConnection("jdbc:sqlite:test.db");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
+
+    public void ajoutecard(int  idc, int nombre, int idp){
+        String sqlaj =
+        "insert into cards select "+idc+",0,0,0,"+idp+" where not exists (select * from cards where idc="+idc+" and idp="+idp+");";
+        String sqlup=
+        "update cards set nombre=(select nombre from cards where idc="+idc+" and idp="+idp+")+"+nombre+" where idc="+idc+" and idp="+idp+";";
+        try(Connection conn =this.connect(); PreparedStatement pstmt = conn.prepareStatement(sqlaj); PreparedStatement pstmt2 = conn.prepareStatement(sqlup)){
+            pstmt.executeUpdate();
+            pstmt2.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e);
+        }
+    }
+
+    public void enlevecard(int  idc, int nombre, int idp){
+        String sqlup=
+        "update cards set nombre=(select nombre from cards where idc="+idc+" and idp="+idp+")-"+nombre+" where idc="+idc+" and idp="+idp+";";
+        try(Connection conn =this.connect(); PreparedStatement pstmt2 = conn.prepareStatement(sqlup)){
+            pstmt2.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e);
+        }
+    }
     /* #endregion */
 }

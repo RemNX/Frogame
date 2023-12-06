@@ -1,16 +1,10 @@
 package autre;
 import java.util.Random;
 
-import objets.type_card;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import objets.stocklists;
-
 
 public class fct {
     public static int randrop(double[] listdrop){
@@ -70,14 +64,35 @@ public class fct {
         }
     }
 
+    public void insertplayer(int idp, String nom, int level, int xp, int money){
+        String sql = "insert into player(idp,nom,level,xp,money) values (?,?,?,?,?)";
+        try(Connection conn =this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1,idp);
+            pstmt.setString(2, nom);
+            pstmt.setInt(3,level);
+            pstmt.setInt(4,xp);
+            pstmt.setInt(5,money);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e);
+        }
+    }
+
+    public void ajoutecard(int  idc, int nombre, int idp){
+        String sqlaj =
+        "insert into cards select 22,0,0,0,1 where not exists (select * from cards where idc=22 and idp=1);";
+        String sqlup=
+        "update cards set nombre=(select nombre from cards where idc=22 and idp=1)+1 where idc=22 and idp=1;";
+        try(Connection conn =this.connect(); PreparedStatement pstmt = conn.prepareStatement(sqlaj); PreparedStatement pstmt2 = conn.prepareStatement(sqlup)){
+            pstmt.executeUpdate();
+            pstmt2.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e);
+        }
+    }
+
     public static void main(String[] args) {
         fct app = new fct();
-        int a = 0;
-        for (type_card[] i :stocklists.listtype){
-            for (type_card j : i){
-                a+=1;
-                app.inserttypecard(a,j.getname(),j.getnrarity(),j.getdesc());
-            }
-        }
+        app.ajoutecard(12,1,1);
     }
 }
